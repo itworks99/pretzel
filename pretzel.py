@@ -85,18 +85,18 @@ def pretzel(jsonfile):
         raise
 
 
-def iterate_over_json_dictionary(d):
+def iterate_over_json_dictionary(dictionary):
 
     global index
     global parent
     index += 1
     global imported_records
-    for k, v in d.items():
-        if (isinstance(v, dict)):
+    for key, value in dictionary.items():
+        if (isinstance(value, dict)):
             parent = index
-            iterate_over_json_dictionary(v)
+            iterate_over_json_dictionary(value)
         else:
-            imported_records.append([index, parent, k, v])
+            imported_records.append([index, parent, key, value])
 
 
 def lookup_array_name(title, index):
