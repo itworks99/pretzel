@@ -3,7 +3,6 @@ import os
 import sys
 
 import click
-import numpy as np
 
 md = ''
 
@@ -26,7 +25,6 @@ def pretzel(jsonfile):
     global table_header
     global md_section_break
     global imported_records
-    header = ""
 
     try:
         file = open(jsonfile)
@@ -37,14 +35,13 @@ def pretzel(jsonfile):
 
             iterate_over_json_dictionary(json_src)
 
-            print(imported_records)
-            index = 0
             title = ''
             type_ = ''
             desc = ''
             required = ''
+            required_yes = ''
+
             for record in imported_records:
-                index = record[0]
                 if record[2] == "title":
                     title = record[3]
                 if record[2] == "type":
@@ -52,26 +49,34 @@ def pretzel(jsonfile):
                 if record[2] == "description":
                     desc = record[3]
                 if record[2] == "required":
-                    required = str(record[3])
+                    required = record[3]
 
                 if title != "" and type_ != "" and desc != "":
+
+                    if required:
+                        required_yes = lookup_required_fields(title, required)
+
                     if type_ != 'object':
                         if type_ == 'array':
-                            md += '|**' + title + '**|' + \
-                                "[`" + title + '`](#' + title + ')`[]`' + \
-                                "|" + desc + "|" + required + "|\n"
+
+                            array_name = lookup_array_name(
+                                type_, imported_records.index(record))
+
+                            md += '|**' + title + '**|' + array_name + \
+                                "|" + desc + "|" + required_yes + "|\n"
                         else:
-                            md += '|**' + title + '**|' + type_ + "|" + desc + "|" + required + "|\n"
+                            md += '|**' + title + "**|`" + type_ + "`|" + desc + "|" + required_yes + "|\n"
 
                     elif type_ == 'object':
                         md += md_section_break
                         md += markdown_header(title)
                         md += markdown_header_description(desc)
                         md += table_header
+
                     title = ''
                     type_ = ''
                     desc = ''
-                    required = ''
+                    required_yes = ''
         print(md)
 
     except OSError as err:
@@ -94,49 +99,29 @@ def iterate_over_json_dictionary(d):
             imported_records.append([index, parent, k, v])
 
 
+def lookup_array_name(title, index):
+    global imported_records
+    array_name = ''
+    if (imported_records[index + 1])[2] == 'title':
+        array_name = (imported_records[index + 1][3])
+        return ("[`" + array_name + '`](#' + array_name + ')`[]`')
+    else:
+        return("`String[]`")
+
+
+def lookup_required_fields(title, required):
+    if title.lower() in required:
+        return "`YES`"
+    else:
+        return ""
+
+
 def markdown_header(input):
     return('## ' + input + '\n\n')
 
 
 def markdown_header_description(input):
     return (input + '\n\n')
-
-
-def traverse_json_object(json_src):
-    md_output_line = ''
-    md = ''
-    for field in json_src:
-        title = ''
-        type_ = ''
-        desc = ''
-        required = ''
-
-        for item in json_src[field]:
-
-            if item == "title":
-                title = str(json_src[field][item])
-
-            if item == "type":
-                type_ = str(json_src[field][item])
-
-            if item == "description":
-                desc = str(json_src[field][item])
-
-            if item == 'required':
-                required = "` Yes `"
-
-        if type_ == 'array':
-            md_output_line += '|**' + title + '**|' + \
-                "[`" + title + '`](#' + title + ')`[]`' + \
-                "|" + desc + "|" + required + "|\n"
-        else:
-            md_output_line += '|**' + title + '**|' + \
-                type_ + "|" + desc + "|" + required + "|\n"
-
-        md += md_output_line
-        md_output_line = ''
-
-    return md
 
 
 pretzel()
