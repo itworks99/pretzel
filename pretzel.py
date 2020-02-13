@@ -13,6 +13,10 @@ table_header += '| :-------------- | :-------------------- | :------------------
 
 md_section_break = '\n' + '---' + '\n'
 
+index = 0
+parent = 0
+imported_records = []
+
 
 @click.command()
 @click.option('-f', '--json-file', 'jsonfile', required=True, type=str)
@@ -21,6 +25,7 @@ def pretzel(jsonfile):
     global md
     global table_header
     global md_section_break
+    global imported_records
     header = ""
 
     try:
@@ -30,37 +35,63 @@ def pretzel(jsonfile):
             file.close()
             json_src = json.loads(json_file)
 
-            md += markdown_header(json_src["title"])
-            md += markdown_header_description(json_src["description"])
+            iterate_over_json_dictionary(json_src)
 
-            json_src = json_src["properties"]
+            print(imported_records)
+            index = 0
+            title = ''
+            type_ = ''
+            desc = ''
+            required = ''
+            for record in imported_records:
+                index = record[0]
+                if record[2] == "title":
+                    title = record[3]
+                if record[2] == "type":
+                    type_ = record[3]
+                if record[2] == "description":
+                    desc = record[3]
+                if record[2] == "required":
+                    required = str(record[3])
 
-            md += table_header
+                if title != "" and type_ != "" and desc != "":
+                    if type_ != 'object':
+                        if type_ == 'array':
+                            md += '|**' + title + '**|' + \
+                                "[`" + title + '`](#' + title + ')`[]`' + \
+                                "|" + desc + "|" + required + "|\n"
+                        else:
+                            md += '|**' + title + '**|' + type_ + "|" + desc + "|" + required + "|\n"
 
-            md += traverse_json_object(json_src)
-
-            md += md_section_break
-
-            for section in json_src:
-                md += '\n\n'
-                for entry in json_src[section]:
-                    object = json_src[section][entry]
-                    if type(object) is not dict:
-                        if header == "":
-                            header += markdown_header(
-                                json_src[section]['title'])
-                            header += markdown_header_description(
-                                json_src[section]['description'])
-                    else:
-                        md += header
+                    elif type_ == 'object':
+                        md += md_section_break
+                        md += markdown_header(title)
+                        md += markdown_header_description(desc)
                         md += table_header
-                        md += traverse_json_object(object)
-            print(md)
+                    title = ''
+                    type_ = ''
+                    desc = ''
+                    required = ''
+        print(md)
 
     except OSError as err:
         print("Configuration file not found!")
         print("OS error: {0}".format(err))
         raise
+
+
+def iterate_over_json_dictionary(d):
+
+    global index
+    global parent
+    index += 1
+    global imported_records
+    for k, v in d.items():
+        if (isinstance(v, dict)):
+            parent = index
+            iterate_over_json_dictionary(v)
+        else:
+            imported_records.append([index, parent, k, v])
 
 
 def markdown_header(input):
@@ -81,8 +112,10 @@ def traverse_json_object(json_src):
         required = ''
 
         for item in json_src[field]:
+
             if item == "title":
                 title = str(json_src[field][item])
+
             if item == "type":
                 type_ = str(json_src[field][item])
 
@@ -100,11 +133,8 @@ def traverse_json_object(json_src):
             md_output_line += '|**' + title + '**|' + \
                 type_ + "|" + desc + "|" + required + "|\n"
 
-        if md_output_line != '|||||':
-            md += md_output_line
+        md += md_output_line
         md_output_line = ''
-
-    print(json_src.keys())
 
     return md
 
