@@ -1,0 +1,239 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "JSON schema for the interface contract",
+  "type": "object",
+  "description": "Example description.",
+  "properties": {
+    "productName": {
+      "type": "string",
+      "title": "Product Name",
+      "description": "The name of the application or service in the context of the organisation.",
+      "required": true,
+      "minLength": 5,
+      "maxLength": 100
+    },
+    "productCode": {
+      "type": "string",
+      "title": "Product Code",
+      "description": "Code to represent the product capability (3-5 letters).",
+      "required": true,
+      "minLength": 3,
+      "maxLength": 5
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "What does application or service provides",
+      "required": true,
+      "maxLength": 300
+    },
+    "customers": {
+      "type": "array",
+      "title": "Consumer(s)",
+      "description": "Other consuming Products and/or end-users",
+      "required": true,
+      "items": {
+        "type": "string",
+        "title": "Consumer",
+        "required": true
+      }
+    },
+    "areaLevel1": {
+      "type": "array",
+      "title": "Areas (L1)",
+      "description": "Tree breakdown of product functional areas (product name is L0)",
+      "required": true,
+      "items": {
+        "type": "object",
+        "properties": {
+          "area": {
+            "type": "string",
+            "title": "Name",
+            "required": true
+          },
+          "areaLevel2": {
+            "type": "array",
+            "title": "Areas (L2)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "area": {
+                  "type": "string",
+                  "title": "Name"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "businessArea": {
+      "type": "string",
+      "title": "Business Area",
+      "description": "Internal business area which owns the product",
+      "required": true,
+      "enum": [
+        "Business Area 1",
+        "Business Area 2",
+        "Business Area 3"
+      ]
+    },
+    "productOwners": {
+      "type": "array",
+      "title": "Product Owner(s)",
+      "description": "Individuals from the business area who own the product (can make decisions).",
+      "required": true,
+      "items": {
+        "type": "object",
+        "properties": {
+          "FirstName": {
+            "type": "string",
+            "title": "First Name",
+            "required": true
+          },
+          "LastName": {
+            "type": "string",
+            "title": "Last Name",
+            "required": true
+          },
+          "Email": {
+            "type": "email",
+            "title": "Email",
+            "required": true
+          }
+        }
+      }
+    },
+    "requiredPlatforms": {
+      "type": "array",
+      "title": "Platforms",
+      "items": {
+        "type": "string",
+        "title": "Platform",
+        "enum": [
+          "Custom",
+          "Dynamics",
+          "Sitecore"
+        ]
+      }
+    },
+    "costEstimate": {
+      "type": "object",
+      "title": "Cost Estimate",
+      "required": true,
+      "properties": {
+        "dev": {
+          "type": "integer",
+          "title": "DEV",
+          "required": true
+        },
+        "test": {
+          "type": "integer",
+          "title": "TEST",
+          "required": true
+        },
+        "prod": {
+          "type": "integer",
+          "title": "PROD",
+          "required": true
+        }
+      }
+    },
+    "deliveryEntities": {
+      "type": "array",
+      "title": "Delivery Entities",
+      "required": true,
+      "description": "All delivery team members should have their own Visual Studio Subscription (if applicable)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "required": true,
+            "description": "Name of the entity (internal department or external company)"
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain",
+            "required": true,
+            "description": "The email domain to whitelist e.g. \"domain.com.au\""
+          },
+          "admins": {
+            "type": "array",
+            "title": "Entity Admins",
+            "items": {
+              "type": "object",
+              "required": true,
+              "properties": {
+                "FirstName": {
+                  "type": "string",
+                  "title": "First Name",
+                  "required": true
+                },
+                "LastName": {
+                  "type": "string",
+                  "title": "Last Name",
+                  "required": true
+                },
+                "Email": {
+                  "type": "email",
+                  "title": "Email",
+                  "required": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "supportEntities": {
+      "type": "array",
+      "title": "Support Entities",
+      "required": true,
+      "description": "All support team members should have their own Visual Studio Subscription (if applicable)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "required": true,
+            "description": "Name of the entity (internal department or external company)"
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain",
+            "required": true,
+            "description": "The email domain to whitelist e.g. \"domain.com.au\""
+          },
+          "admins": {
+            "type": "array",
+            "title": "Entity Admins",
+            "items": {
+              "type": "object",
+              "required": true,
+              "properties": {
+                "FirstName": {
+                  "type": "string",
+                  "title": "First Name",
+                  "required": true
+                },
+                "LastName": {
+                  "type": "string",
+                  "title": "Last Name",
+                  "required": true
+                },
+                "Email": {
+                  "type": "email",
+                  "title": "Email",
+                  "required": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,304 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Service",
+    "description": "Description of the service",
+    "type": "object",
+    "definitions": {
+        "item": {
+            "title": "Item",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "title": "Name"
+                },
+                "description": {
+                    "type": "string",
+                    "title": "Description"
+                }
+            }
+        },
+        "component": {
+            "title": "Component",
+            "description": "",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "title": "Name",
+                    "type": "string",
+                    "description": "Component name"
+                },
+                "subComponents": {
+                    "title": "Sub-Components",
+                    "description": "",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definition/component"
+                    }
+                }
+            }
+        },
+        "uuid": {
+            "title": "Globally Unique Identifier",
+            "type": "string",
+            "pattern": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        }
+    },
+    "properties": {
+        "description": {
+            "type": "object",
+            "title": "Description",
+            "description": "Service description identifying the features and customers for the service and how it is supported.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "title": "Name"
+                },
+                "summary": {
+                    "type": "string",
+                    "title": "Summary"
+                },
+                "version": {
+                    "type": "string",
+                    "title": "Version",
+                    "description": "A string specifying the version of the service. Should be in the format major.minor.patch as per (SemVer)[https://semver.org/].",
+                    "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+                    "examples": [
+                        "0.1.0",
+                        "2.4.8",
+                        "3.0.1"
+                    ]
+                },
+                "tier": {
+                    "type": "string",
+                    "description": "Service tier level, defining the service availability and data protection requirements.",
+                    "enum": [
+                        "Level 0",
+                        "Level 1",
+                        "Level 2",
+                        "Level 3"
+                    ]
+                },
+                "features": {
+                    "type": "array",
+                    "title": "Features",
+                    "description": "Key functionality of the service defined by what it does for the consumer.",
+                    "items": {
+                        "$ref": "#/definitions/item"
+                    }
+                },
+                "support": {
+                    "title": "Supporter",
+                    "description": "Service support team details, how to get assistance with this service... Who's the PO, who's the product manager",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#"
+                    }
+                }
+            }
+        },
+        "architecture": {
+            "type": "object",
+            "title": "Architecture",
+            "description": "Service architecture showing the customer journey/process flow and interface specifications.",
+            "properties": {
+                "personas": {
+                    "type": "array",
+                    "title": "Personas",
+                    "description": "The different types of personas and how they interact with the service. Should include consumers - i.e. they will directly consume the service APIs, UIs or deploy on the service if it's a platform.",
+                    "items": {
+                        "title": "Persona",
+                        "type": "object",
+                        "description": "A particular persona.",
+                        "properties": {
+                            "id": {
+                                "$ref": "#/definitions/uuid"
+                            },
+                            "type": {
+                                "title": "Type",
+                                "type": "string",
+                                "description": "The type of persona.",
+                                "enum": [
+                                    "consumer",
+                                    "operator",
+                                    "developer",
+                                    "support",
+                                    "owner"
+                                ]
+                            },
+                            "name": {
+                                "title": "Name",
+                                "type": "string",
+                                "description": "Name of the persona."
+                            },
+                            "description": {
+                                "title": "Description",
+                                "type": "string",
+                                "description": "Description of the persona,  attributes about them and their service role."
+                            }
+                        }
+                    }
+                },
+                "processFlows": {
+                    "title": "Process Flows",
+                    "description": "The key usage process flows of the service, defined in terms of tasks performed by personas.",
+                    "type": "array",
+                    "items": {
+                        "title": "Process Flow",
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "title": "Name",
+                                "description": "Process flow name",
+                                "type": "string"
+                            },
+                            "description": {
+                                "title": "Description",
+                                "description": "Process flow description",
+                                "type": "string"
+                            },
+                            "personas": {
+                                "title": "Personas",
+                                "description": "Personas involved in the process flow",
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/uuid"
+                                }
+                            },
+                            "umlProcessFlow": {
+                                "title": "UML Process Flow",
+                                "description": "UML definition of a process flow diagram with peronas represented as swimlanes",
+                                "type": "string",
+                                "format": "plantuml"
+                            }
+                        }
+                    }
+                },
+                "interfaces": {
+                    "type": "array",
+                    "title": "Interfaces",
+                    "items": {
+                        "title": "Interface",
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "title": "Name",
+                                "type": "string",
+                                "description": "Name of the interface"
+                            },
+                            "description": {
+                                "title": "Name",
+                                "type": "string",
+                                "description": "Name of the interface"
+                            },
+                            "operations": {
+                                "title": "Operations",
+                                "type": "array",
+                                "description": "Operations that can be performed on given interface.",
+                                "items": {
+                                    "type": "string",
+                                    "enum": [
+                                        "Create",
+                                        "Read",
+                                        "Update",
+                                        "Delete"
+                                    ]
+                                }
+                            },
+                            "fields": {
+                                "title": "Fields",
+                                "type": "array",
+                                "description": "Collection of fields in an interface contract.",
+                                "items": {
+                                    "title": "Field",
+                                    "type": "object",
+                                    "description": "Field in an interface contract.",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "title": "Name",
+                                            "description": "Name of the field"
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "title": "Type",
+                                            "description": "Type of the field",
+                                            "enum": [
+                                                "boolean",
+                                                "integer",
+                                                "number",
+                                                "object",
+                                                "string"
+                                            ]
+                                        },
+                                        "isArray": {
+                                            "type": "boolean",
+                                            "title": "Array",
+                                            "description": "If the field can have more than one instance of the given type."
+                                        },
+                                        "description": {
+                                            "type": "string",
+                                            "title": "Description",
+                                            "description": "Description of the field."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "capabilities": {
+                    "title": "Capabilities",
+                    "type": "array",
+                    "description": "Capabilities are the service being provided indepdend"
+                }
+            }
+        },
+        "design": {
+            "title": "Design",
+            "description": "Service Design",
+            "type": "object",
+            "properties": {
+                "infra": {},
+                "tech": {},
+                "apis": {},
+                "data": {},
+                "internalServices": {
+                    "type": "array",
+                    "title": "Internal Services",
+                    "description": "Internal service definitions with less details. Should be referenced from the process flows.",
+                    "items": {
+                        "$ref": "#/definitions/component"
+                    }
+                },
+                "externalServices": {
+                    "type": "array",
+                    "title": "External Services",
+                    "description": "References to an external services which this service is dependent on.",
+                    "items": {
+                        "title": "Service Reference",
+                        "type": "object",
+                        "description": "Reference to an external service.",
+                        "properties": {
+                            "productIdentifier": {
+                                "title": "Product Identifier",
+                                "type": "string",
+                                "description": "Identifier reference for an external product."
+                            },
+                            "serviceIdentifier": {
+                                "title": "Service Identifier",
+                                "type": "string",
+                                "description": "Identifier reference for an external service."
+                            },
+                            "serviceVersion": {
+                                "title": "Service Version",
+                                "type": "string",
+                                "description": "Version reference pinning for an external service."
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
